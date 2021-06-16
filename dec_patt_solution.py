@@ -1,4 +1,4 @@
-
+from abc import ABC, abstractmethod
 
 class Hero:
     def __init__(self):
@@ -25,3 +25,20 @@ class Hero:
 
     def get_stats(self):
         return self.stats.copy()
+
+
+class AbstractEffect(Hero, ABC):
+    @abstractmethod
+    def some_method(self):
+        pass
+
+
+class AbstractPositive(AbstractEffect):
+    @abstractmethod
+    def some_method(self):
+        pass
+
+class Berserk(AbstractPositive):
+    @abstractmethod
+    def some_method(self):
+        pass
