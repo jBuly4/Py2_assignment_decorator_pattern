@@ -4,6 +4,7 @@ from dec_patt_solution import *
 
 hero = Hero()
 
+
 class TestHero(unittest.TestCase):
     def test_hero_get_stats(self):
         cases = [{'HP': 128,
@@ -12,7 +13,6 @@ class TestHero(unittest.TestCase):
                 'Charisma': 2, 'Intelligence': 3,
                 'Agility': 8, 'Luck': 1}
                 ]
-
         for case in cases:
             for k, v in case.items():
                 with self.subTest(x=v):
@@ -25,7 +25,6 @@ class TestHero(unittest.TestCase):
                 'Charisma': 2, 'Intelligence': 3,
                 'Agility': 8, 'Luck': 1}
                 ]
-
         for case in cases:
             for k, v in case.items():
                 with self.subTest(x=v):
@@ -40,6 +39,7 @@ class TestHero(unittest.TestCase):
         case = []
         with self.subTest(x=case):
             self.assertEqual(hero.get_positive_effects(), case)
+
 
 class TestBerserk(unittest.TestCase):
     brs1 = Berserk(hero)
@@ -80,6 +80,45 @@ class TestBerserk(unittest.TestCase):
                     self.assertEqual(brs1.get_positive_effects(), case)
                 elif case == cases[1]:
                     self.assertEqual(brs2.get_positive_effects(), case)
+
+
+class TestBlessing(unittest.TestCase):
+    brs1 = Berserk(hero)
+    bless1 = Blessing(hero)
+    bless2 = Blessing(brs1)
+
+    def test_bless_get_stats(self):
+        cases = [{'HP': 130,
+                'MP': 44, 'SP': 102, 'Strength': 17,
+                'Perception': 6, 'Endurance': 10,
+                'Charisma': 4, 'Intelligence': 5,
+                'Agility': 10, 'Luck': 3},
+                {'HP': 180,
+                'MP': 44, 'SP': 102, 'Strength': 24,
+                'Perception': 3, 'Endurance': 17,
+                'Charisma': 1, 'Intelligence': 2,
+                'Agility': 17, 'Luck': 10}
+                ]
+        for case in cases:
+            for k, v in case.items():
+                with self.subTest(x=v):
+                    if case == cases[0]:
+                        self.assertEqual(bless1.get_stats()[k], v)
+                    elif case == cases[1]:
+                        self.assertEqual(bless2.get_stats()[k], v)
+
+    def test_bless_get_pos(self):
+        case = ['Berserk', 'Blessing']
+        with self.subTest(x=case):
+            self.assertEqual(bless1.get_positive_effects(), case[1])
+            self.assertEqual(bless2.get_positive_effects(), case)
+
+    def test_bless_neg_effects(self):
+        case = []
+        with self.subTest(x=case):
+            self.assertEqual(bless1.get_negative_effects(), case)
+            self.assertEqual(bless2.get_negative_effects(), case)
+
 
 class TestCurse(unittest.TestCase):
     brs1 = Berserk(hero)
@@ -130,7 +169,66 @@ class TestCurse(unittest.TestCase):
                 elif case == cases[2]:
                     elf.assertEqual(cur1.get_negative_effects(), case)
 
+class TestWeakness(unittest.TestCase):
+    weak1 = Weakness(hero)
+    brs1 = Berserk(hero)
+    cur1 = Curse(brs1)
+    weak2 = Weakness(brs1)
+    weak3 = Weakness(cur1)
+
+    def test_weakness_get_stats(self):
+        cases = [{'HP': 128,
+                'MP': 42, 'SP': 100, 'Strength': 11,
+                'Perception': 4, 'Endurance': 4,
+                'Charisma': 2, 'Intelligence': 3,
+                'Agility': 4, 'Luck': 1},
+                {'HP': 178,
+                'MP': 42, 'SP': 100, 'Strength': 18,
+                'Perception': 1, 'Endurance': 11,
+                'Charisma': -1, 'Intelligence': 0,
+                'Agility': 11, 'Luck': 8}
+                ]
+        for case in cases:
+            for k, v in case.items():
+                with self.subTest(x=v):
+                    if case == cases[0]:
+                        self.assertEqual(weak1.get_stats()[k], v)
+                    elif case == cases[1]:
+                        self.assertEqual(weak2.get_stats()[k], v)
+
+    def test_curse_neg_effects(self):
+        case = ['Weakness', ['Curse', 'Weakness']]
+        with self.subTest(x=case):
+            self.assertEqual(weak1.get_negative_effects(), case[0])
+            self.assertEqual(weak2.get_negative_effects(), case[0])
+            self.assertEqual(weak3.get_negative_effects(), case[1])
+
+    def test_curse_pos_effects(self):
+        case = [[],'Berserk']
+        with self.subTest(x=case):
+            self.assertEqual(weak1.get_positive_effects(), case[0])
+            self.assertEqual(weak2.get_positive_effects(), case[1])
 
 
+class TestEvilEye(unittest.TestCase):
+    evil1 = EvilEye(hero)
+    cur1 = Curse(evil1)
+
+    def test_evileye_get_stats(self):
+        cases = [{'HP': 128,
+                'MP': 42, 'SP': 100, 'Strength': 15,
+                'Perception': 4, 'Endurance': 8,
+                'Charisma': 2, 'Intelligence': 3,
+                'Agility': 8, 'Luck': -9}
+                ]
+        for k, v in cases[0].items():
+            with self.subTest(x=v):
+                self.assertEqual(evil1.get_stats()[k], v)
+
+    def test_evil_neg_effects(self):
+        case = ['EvilEye', ['EvilEye', 'Curse']]
+        with self.subTest(x=case):
+            self.assertEqual(evil1.get_negative_effects(), case[0])
+            self.assertEqual(cur1.get_negative_effects(), case[1])
 
 unittest.main()
